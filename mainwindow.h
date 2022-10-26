@@ -22,9 +22,12 @@ public:
 
     void setupUi();
     void setters();
-    void on_pushButton_dot_clicked();
-    void on_pushButton_equal_clicked();
-    void on_pushButton_C_clicked();
+    void set_font();
+    void on_back_clicked();
+    void on_persent_clicked();
+    void on_dot_clicked();
+    void on_equal_clicked();
+    void on_C_clicked();
     QString parse();
 private slots:
     void digit_buttons();
