@@ -152,7 +152,8 @@ void MainWindow::math_operations()
             while(label_string[i] != '+' &&
                   label_string[i] != '-' &&
                   label_string[i] != 'x' &&
-                  label_string[i] != '/') {
+                  label_string[i] != '/' &&
+                  i > 0) {
                 if (label_string[i] == '.') {
                     dot_count++;
                 }
@@ -191,95 +192,100 @@ void MainWindow::math_operations()
 
 QString MainWindow::parse()
 {
-    QString token{};
-    QList<QString> num_list{};
-    QList<QString> oper_list{};
-    QList<QString> new_oper_list{};
-    QList<QString> new_num_list{};
     label_string = label->text();
-    int i{};
-    while (i < label_string.size()) {
-        if (label_string[i] != '+' &&
-               label_string[i] != '-' &&
-               label_string[i] != 'x' &&
-               label_string[i] != '/') {
-            token += label_string[i];
+    int i = label_string.size() - 1;
+    bool oper_exists{};
+    while (i >= 0) {
+        if (label_string[i] == '+' ||
+                label_string[i] == '-' ||
+                label_string[i] == 'x' ||
+                label_string[i] == '/') {
+            oper_exists = true;
+            break;
         }
-        else {
-            num_list.push_back(token);
-            oper_list.push_back(label_string[i]);
-            token = "";
-        }
-        ++i;
+        --i;
     }
-    num_list.push_back(token);
-    for (int i{}; i < oper_list.size(); ++i) {
-        qDebug() << "oper_list  " << oper_list[i];
+    if (!oper_exists) {
+        return label_string;
     }
-    for (int i{}; i < num_list.size(); ++i) {
-        qDebug() << "num_list  " << num_list[i];
+    else {
+        QString token{};
+        QList<QString> num_list{};
+        QList<QString> oper_list{};
+        QList<QString> new_oper_list{};
+        QList<QString> new_num_list{};
+        i = 0;
+        while (i < label_string.size()) {
+            if (label_string[i] != '+' &&
+                   label_string[i] != '-' &&
+                   label_string[i] != 'x' &&
+                   label_string[i] != '/') {
+                token += label_string[i];
+            }
+            else {
+                num_list.push_back(token);
+                oper_list.push_back(label_string[i]);
+                token = "";
+            }
+            ++i;
+        }
+        num_list.push_back(token);
+        double first{};
+        double second{};
+        QString result{};
+        do {
+            if (oper_list.first() == "x") {
+                first = num_list.first().toDouble();
+                num_list.pop_front();
+                second = num_list.first().toDouble();
+                num_list.pop_front();
+                result = QString::number(first * second);
+                oper_list.pop_front();
+                num_list.push_front(result);
+            }
+            else if (oper_list.first() == "/") {
+                first = num_list.first().toDouble();
+                num_list.pop_front();
+                second = num_list.first().toDouble();
+                num_list.pop_front();
+                result = QString::number(first / second);
+                oper_list.pop_front();
+                num_list.push_front(result);
+            }
+            else {
+                new_oper_list.push_back(oper_list.first());
+                oper_list.pop_front();
+                new_num_list.push_back(num_list.first());
+                num_list.pop_front();
+            }
+        } while (!oper_list.isEmpty());
+        new_num_list.push_back(num_list.first());
+        num_list.pop_front();
+        if (new_oper_list.isEmpty()) {
+            return new_num_list.first();
+        }
+        do {
+            if (new_oper_list.first() == '+') {
+                first = new_num_list.first().toDouble();
+                new_num_list.pop_front();
+                second = new_num_list.first().toDouble();
+                new_num_list.pop_front();
+                new_oper_list.pop_front();
+                result = QString::number(first + second);
+                new_num_list.push_front(result);
+            }
+            else if (new_oper_list.first() == '-') {
+                first = new_num_list.first().toDouble();
+                new_num_list.pop_front();
+                second = new_num_list.first().toDouble();
+                new_num_list.pop_front();
+                new_oper_list.pop_front();
+                result = QString::number(first - second);
+                new_num_list.push_front(result);
+            }
+        } while (!new_oper_list.isEmpty());
+       return new_num_list.first();
     }
-    double first{};
-    double second{};
-    QString result{};
-    do {
-        if (oper_list.first() == "x") {
-            first = num_list.first().toDouble();
-            num_list.pop_front();
-            second = num_list.first().toDouble();
-            num_list.pop_front();
-            result = QString::number(first * second);
-            oper_list.pop_front();
-            num_list.push_front(result);
-        }
-        else if (oper_list.first() == "/") {
-            first = num_list.first().toDouble();
-            num_list.pop_front();
-            second = num_list.first().toDouble();
-            num_list.pop_front();
-            result = QString::number(first / second);
-            oper_list.pop_front();
-            num_list.push_front(result);
-        }
-        else {
-            new_oper_list.push_back(oper_list.first());
-            oper_list.pop_front();
-            new_num_list.push_back(num_list.first());
-            num_list.pop_front();
-        }
-    } while (!oper_list.isEmpty());
-    new_num_list.push_back(num_list.first());
-    num_list.pop_front();
-    for (int i{}; i < new_oper_list.size(); ++i) {
-        qDebug() << new_oper_list[i];
-    }
-    for (int i{}; i < new_num_list.size(); ++i) {
-        qDebug() << new_num_list[i];
-    }
-    if (new_oper_list.isEmpty()) {
-        return new_num_list.first();
-    }
-    do {
-        if (new_oper_list.first() == '+') {
-            first = new_num_list.first().toDouble();
-            new_num_list.pop_front();
-            second = new_num_list.first().toDouble();
-            new_num_list.pop_front();
-            new_oper_list.pop_front();
-            result = QString::number(first + second);
-            new_num_list.push_front(result);
-        }
-        else if (new_oper_list.first() == '-') {
-            first = new_num_list.first().toDouble();
-            new_num_list.pop_front();
-            second = new_num_list.first().toDouble();
-            new_num_list.pop_front();
-            new_oper_list.pop_front();
-            result = QString::number(first - second);
-            new_num_list.push_front(result);
-        }
-    } while (!new_oper_list.isEmpty());
-   return new_num_list.first();
 }
 
 void MainWindow::on_pushButton_dot_clicked()
@@ -332,48 +338,53 @@ void MainWindow::operations()
     bool is_number_string{true};
     label_string = label->text();
     if(button->text() == '%') {
-        for(int i{}; i < label_string.size(); ++i) {
-            if (label_string[i] == '+' ||
-                    label_string[i] == '-' ||
-                    label_string[i] == 'x' ||
-                    label_string[i] == '/') {
-                is_number_string = false;
-                break;
+        if (label->text() == "0.") {
+            label->setText("0");
+        }
+        else {
+            for(int i{}; i < label_string.size(); ++i) {
+                if (label_string[i] == '+' ||
+                        label_string[i] == '-' ||
+                        label_string[i] == 'x' ||
+                        label_string[i] == '/') {
+                    is_number_string = false;
+                    break;
+                }
             }
-        }
-        if (is_number_string) {
-            numbers = label_string.toDouble();
-        }
-        else{
-            numbers = parse().toDouble();
-        }
-         numbers /= double(100);
-         result1 = QString::number(numbers, 'd', 10);
-         if (result1.contains(".")) {
-             int count_of_0s{};
-             for (int i = result1.size() - 1; i > 0; --i) {
-                 if (result1[i] != '0') {
-                     result1.remove(i + 1, count_of_0s);
-                     break;
+            if (is_number_string) {
+                numbers = label_string.toDouble();
+            }
+            else{
+                numbers = parse().toDouble();
+            }
+             numbers /= double(100);
+             result1 = QString::number(numbers, 'd', 10);
+             if (result1.contains(".")) {
+                 int count_of_0s{};
+                 for (int i = result1.size() - 1; i > 0; --i) {
+                     if (result1[i] != '0') {
+                         result1.remove(i + 1, count_of_0s);
+                         break;
+                     }
+                     ++count_of_0s;
                  }
-                 ++count_of_0s;
              }
-         }
-         QFont font = label->font();
-         if (label->text().size() < 6) {
-             font.setPointSize(30);
-         }
-         else if (label->text().size() >= 6 && label->text().size() < 10) {
-             font.setPointSize(25);
-         }
-         else if (label->text().size() >= 10 && label->text().size() <= 14){
-             font.setPointSize(22);
-         }
-         else if (label->text().size() > 14 && label->text().size() <= 17) {
-             font.setPointSize(17);
-         }
-         label->setFont(font);
-         label->setText(result1);
+             QFont font = label->font();
+             if (label->text().size() < 6) {
+                 font.setPointSize(30);
+             }
+             else if (label->text().size() >= 6 && label->text().size() < 10) {
+                 font.setPointSize(25);
+             }
+             else if (label->text().size() >= 10 && label->text().size() <= 14){
+                 font.setPointSize(22);
+             }
+             else if (label->text().size() > 14 && label->text().size() <= 17) {
+                 font.setPointSize(17);
+             }
+             label->setFont(font);
+             label->setText(result1);
+        }
     }
     else if (button->text() == "<--") {
         QFont font = label->font();
@@ -419,8 +430,38 @@ void MainWindow::on_pushButton_equal_clicked()
     // if last on label is operation symbol, remove that symbol
     if (label_string[label_string.size() - 1] == '+' ||
             label_string[label_string.size() - 1] == '-' ||
-            label_string[label_string.size() - 1] == '*' ||
+            label_string[label_string.size() - 1] == 'x' ||
             label_string[label_string.size() - 1] == '/') {
+        label_string.remove(label_string.size() - 1, 1);
+        label->setText(label_string);
+    }
+
+    // կոտորոկային թվի վերջում գրված զրոները ջնջում ենք
+    if (label_string[label_string.size() - 1] == '0')
+        {
+        int i = label_string.size() - 1;
+        int dot_count{};
+        while(label_string[i] != '+' &&
+              label_string[i] != '-' &&
+              label_string[i] != 'x' &&
+              label_string[i] != '/' &&
+              i > 0) {
+            if (label_string[i] == '.') {
+                dot_count++;
+            }
+            --i;
+        }
+        if (dot_count > 0){
+            i = label_string.size() - 1;
+            while (label_string[i] == '0' && i > 1) {
+                label_string.remove(label_string.size() - 1, 1);
+                --i;
+            }
+            label->setText(label_string);
+        }
+    }
+    // եթե թվի վերջում կետ կա, ջնջում ենք կետը
+    if (label_string[label_string.size() - 1] == '.') {
         label_string.remove(label_string.size() - 1, 1);
         label->setText(label_string);
     }
