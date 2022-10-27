@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::setupUi()
 {
     resize(290, 440);
-    setStyleSheet("background-color: lightsteelblue");
+    setStyleSheet("background-color: grey");
     label = new QLabel(this);
     label->setGeometry(10, 10, 270, 70);
     big_pushButton = new QPushButton*[3];
