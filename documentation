@@ -1,0 +1,30 @@
+ * This work is a calculator that supports four mathematical operations
+   (addition, subtraction, multiplication and division) and percentage calculation.
+
+ * It is implemented with QT software in C++ language․
+
+ * When running the program, a window appears on the screen, which contains
+   buttons with relevant entries and a label field, where the text is reflected.
+
+ * It is not possible to change the size of the window.
+
+ * A certain group of buttons has its own specific coloring and functionality․
+
+ * Each button in each group has its own meaning and role.
+ * Buttons can be pressed only with the mouse, input from the keyboard is not supported.
+
+ * When pressing the C button, zero is written on the label, and everything done
+   before that is forgotten (for example, what button was pressed before that).
+
+ * The back button deletes the last character in the label.
+
+ * When percent button is pressed, the value of the label expression is calculated,
+   the result is divided by 100 and written to label.
+
+ * The dot button is used to write fractional numbers.
+
+ * When the equation button is clicked, the value of the label expression is calculated and written to label.
+
+ * For each of the mathematical operations and number buttons, the appropriate symbol is written in the label.
+
+ * Moreover, all possible logical and illogical cases are considered for each button․

@@ -108,11 +108,12 @@ void MainWindow::set_font()
     else if (label->text().size() >= 6 && label->text().size() < 10) {
         font.setPointSize(25);
     }
-    else if (label->text().size() >= 10 && label->text().size() <= 14){
-        font.setPointSize(22);
-    }
-    else if (label->text().size() > 14 && label->text().size() <= 17) {
-        font.setPointSize(17);
+    else {
+        for (int i{10}, j{23}; i < 17; ++i, --j) {
+            if (label->text().size() == i) {
+                font.setPointSize(j);
+            }
+        }
     }
     label->setFont(font);
 }
@@ -131,6 +132,7 @@ void MainWindow::digit_buttons()
             big_pushButton[2]->setChecked(false);
         }
         else {
+            // do not allow a zero to be written at the beginning of the number
             label_string = label->text();
             if (label_string.size() >= 3 &&
                     label_string[label_string.size() - 1] == '0' &&
@@ -228,7 +230,7 @@ void MainWindow::operations()
     else if (button->text() == ".") {
         on_dot_clicked();
     }
-    else { // if (button->text() == "=")
+    else {
         on_equal_clicked();
     }
 }
