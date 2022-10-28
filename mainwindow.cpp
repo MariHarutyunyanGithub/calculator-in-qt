@@ -277,7 +277,6 @@ QString MainWindow::parse()
             ++i;
         }
         num_list.push_back(token);
-
         double first{};
         double second{};
         QString result{};
@@ -307,8 +306,9 @@ QString MainWindow::parse()
                 --i;
             }
         }
+
         // perform the actions one by one, collecting the result of the action
-        int result1{};
+        double result1{};
         if (oper_list.isEmpty()) {
             return num_list.first();
         }
@@ -391,7 +391,7 @@ void MainWindow::on_persent_clicked()
             numbers = parse().toDouble();
         }
          numbers /= double(100);
-         result1 = QString::number(numbers, 'd', 10);
+         result1 = QString::number(numbers);
          // delete the last zeros from the fractional result
          if (result1.contains(".")) {
              int count_of_0s{};
@@ -492,6 +492,7 @@ void MainWindow::on_equal_clicked()
         label_string.remove(label_string.size() - 1, 1);
         label->setText(label_string);
     }
+    set_font();
     label->setText(parse());
 }
 
